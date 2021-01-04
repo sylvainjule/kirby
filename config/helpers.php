@@ -548,7 +548,7 @@ function option(string $key, $default = null)
  * id or the current page when no id is specified
  *
  * @param string|array ...$id
- * @return \Kirby\Cms\Page|null
+ * @return \Kirby\Cms\Page|\Kirby\Cms\Pages|null
  */
 function page(...$id)
 {
