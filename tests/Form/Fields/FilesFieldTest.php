@@ -231,25 +231,38 @@ class FilesFieldTest extends TestCase
         $this->assertTrue($field->isValid());
     }
 
-    public function testApiPicker()
+    public function testApiFilesPicker()
     {
         $app = $this->app->clone([
-            'options' => [
-                'api.allowImpersonation' => true
-            ],
             'blueprints' => [
-                'pages/default' => [
+                'pages/test-files' => [
                     'fields' => [
-                        'foo' => [
+                        'test' => [
                             'type' => 'files',
                         ]
                     ]
+                ]
+            ],
+            'options' => [
+                'api.allowImpersonation' => true
+            ],
+            'site' => [
+                'children' => [
+                    [
+                        'slug' => 'test-files',
+                        'template' => 'test-files',
+                        'files' => [
+                            ['filename' => 'a.jpg'],
+                            ['filename' => 'b.jpg'],
+                            ['filename' => 'c.jpg']
+                        ]
+                    ],
                 ]
             ]
         ]);
 
         $app->impersonate('kirby');
-        $response = $app->api()->call('pages/test/fields/foo');
+        $response = $app->api()->fieldApi($app->page('test-files'), 'test');
 
         $this->assertCount(3, $response['data']);
         $this->assertSame('a.jpg', $response['data'][0]['filename']);

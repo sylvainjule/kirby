@@ -193,13 +193,13 @@ class UsersFieldTest extends TestCase
         $this->assertTrue($field->isValid());
     }
 
-    public function testApiPicker()
+    public function testApiUsersPicker()
     {
         $app = $this->app->clone([
             'blueprints' => [
-                'pages/default' => [
+                'pages/test-users' => [
                     'fields' => [
-                        'foo' => [
+                        'test' => [
                             'type' => 'users',
                         ]
                     ]
@@ -210,13 +210,16 @@ class UsersFieldTest extends TestCase
             ],
             'site' => [
                 'children' => [
-                    ['slug' => 'test']
+                    [
+                        'slug' => 'test-users',
+                        'template' => 'test-users'
+                    ]
                 ]
             ]
         ]);
 
         $app->impersonate('kirby');
-        $response = $app->api()->call('pages/test/fields/foo');
+        $response = $app->api()->fieldApi($app->page('test-users'), 'test');
 
         $this->assertCount(4, $response['data']);
         $this->assertSame('donatello@getkirby.com', $response['data'][0]['email']);

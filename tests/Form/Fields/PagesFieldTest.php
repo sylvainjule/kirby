@@ -163,28 +163,45 @@ class PagesFieldTest extends TestCase
         $this->assertTrue($field->isValid());
     }
 
-    public function testApiPicker()
+    public function testApiPagesPicker()
     {
         $app = $this->app->clone([
-            'options' => [
-                'api.allowImpersonation' => true
-            ],
             'blueprints' => [
-                'pages/default' => [
+                'pages/test-pages' => [
                     'fields' => [
-                        'foo' => [
+                        'test' => [
                             'type' => 'pages',
                         ]
                     ]
+                ]
+            ],
+            'options' => [
+                'api.allowImpersonation' => true
+            ],
+            'site' => [
+                'children' => [
+                    [
+                        'slug' => 'test-pages-1',
+                        'template' => 'test-pages'
+                    ],
+                    [
+                        'slug' => 'test-pages-2',
+                        'template' => 'test-pages'
+                    ],
+                    [
+                        'slug' => 'test-pages-3',
+                        'template' => 'test-pages'
+                    ],
                 ]
             ]
         ]);
 
         $app->impersonate('kirby');
-        $response = $app->api()->call('pages/a/fields/foo');
+        $response = $app->api()->fieldApi($app->page('test-pages-1'), 'test');
 
-        $this->assertCount(2, $response['data']);
-        $this->assertSame('a', $response['data'][0]['id']);
-        $this->assertSame('b', $response['data'][1]['id']);
+        $this->assertCount(3, $response['data']);
+        $this->assertSame('test-pages-1', $response['data'][0]['id']);
+        $this->assertSame('test-pages-2', $response['data'][1]['id']);
+        $this->assertSame('test-pages-3', $response['data'][2]['id']);
     }
 }
