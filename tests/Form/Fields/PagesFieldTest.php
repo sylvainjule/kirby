@@ -162,4 +162,29 @@ class PagesFieldTest extends TestCase
 
         $this->assertTrue($field->isValid());
     }
+
+    public function testApiPicker()
+    {
+        $app = $this->app->clone([
+            'options' => [
+                'api.allowImpersonation' => true
+            ],
+            'blueprints' => [
+                'pages/default' => [
+                    'fields' => [
+                        'foo' => [
+                            'type' => 'pages',
+                        ]
+                    ]
+                ]
+            ]
+        ]);
+
+        $app->impersonate('kirby');
+        $response = $app->api()->call('pages/a/fields/foo');
+
+        $this->assertCount(2, $response['data']);
+        $this->assertSame('a', $response['data'][0]['id']);
+        $this->assertSame('b', $response['data'][1]['id']);
+    }
 }
